@@ -2,107 +2,126 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Employee Check-In</title>
+  <title>Employee Login</title>
   <style>
     body {
-      font-family: Arial;
-      max-width: 400px;
-      margin: auto;
-      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: #333;
       text-align: center;
+      padding: 30px;
     }
 
-    input, button {
-      padding: 10px;
+    h1 {
+      color: #fff;
+    }
+
+    .form-container {
+      background: #ffffffdd;
+      padding: 30px;
+      margin: auto;
+      border-radius: 10px;
+      max-width: 400px;
+      box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+    }
+
+    input[type="text"], input[type="tel"] {
+      width: 100%;
+      padding: 12px;
       margin: 10px 0;
-      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
 
-    video {
-      width: 100%;
-      max-height: 300px;
-      margin-bottom: 10px;
-    }
-
-    #workButton {
-      display: none;
-      background-color: #28a745;
-      color: white;
-      text-decoration: none;
+    button {
       padding: 12px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      display: inline-block;
+      background-color: #0077ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
     }
 
-    #selfieImage {
+    button:hover {
+      background-color: #005fcc;
+    }
+
+    video, canvas {
+      margin-top: 15px;
+      border-radius: 8px;
       max-width: 100%;
-      margin: 10px 0;
+    }
+
+    #workSection {
+      display: none;
+      margin-top: 30px;
+    }
+
+    #selfie {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h2>Employee Check-In</h2>
 
-  <form id="checkinForm">
-    <input type="text" id="name" placeholder="Enter your name" required><br>
-    <input type="tel" id="contact" placeholder="Enter contact number" required><br>
+  <h1>Employee Check-in</h1>
+  <div class="form-container" id="formSection">
+    <input type="text" id="name" placeholder="Enter your name" required>
+    <input type="tel" id="contact" placeholder="Enter contact number" required>
 
-    <video id="video" autoplay></video><br>
-    <button type="button" onclick="takeSelfie()">Take Selfie</button><br>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <img id="selfieImage" class="hidden" alt="Your selfie"><br>
+    <video id="video" width="320" height="240" autoplay></video><br>
+    <button onclick="takeSelfie()">Capture Selfie</button><br>
 
-    <button type="submit">Submit</button>
-  </form>
+    <canvas id="selfie" width="320" height="240"></canvas><br>
 
-  <a id="workButton" href="https://artistrahul.com" target="_blank">WORK</a>
+    <button onclick="submitForm()">Submit</button>
+  </div>
+
+  <div id="workSection">
+    <h2>Welcome! Ready to Work</h2>
+    <a href="https://artistrahul.com" target="_blank">
+      <button>WORK</button>
+    </a>
+  </div>
 
   <script>
+    // Webcam setup
     const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const selfieImage = document.getElementById('selfieImage');
-    const form = document.getElementById('checkinForm');
-    const workButton = document.getElementById('workButton');
+    const canvas = document.getElementById('selfie');
+    const context = canvas.getContext('2d');
 
-    // Ask for camera access
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then((stream) => {
+      .then(stream => {
         video.srcObject = stream;
       })
-      .catch((error) => {
-        alert('Camera not accessible: ' + error);
+      .catch(err => {
+        alert("Could not access webcam.");
       });
 
     function takeSelfie() {
-      const context = canvas.getContext('2d');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      selfieImage.src = canvas.toDataURL('image/png');
-      selfieImage.style.display = 'block';
+      canvas.style.display = 'block';
     }
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
+    function submitForm() {
       const name = document.getElementById('name').value.trim();
       const contact = document.getElementById('contact').value.trim();
-      const selfieData = selfieImage.src;
 
-      if (!selfieData) {
-        alert("Please take a selfie before submitting.");
+      if (!name || !contact) {
+        alert("Please fill in all fields.");
         return;
       }
 
-      // You could save data to a server or Firebase here
+      // Simulate storing data
+      console.log("Name:", name);
+      console.log("Contact:", contact);
+      console.log("Selfie:", canvas.toDataURL());
 
-      // Hide the form
-      form.style.display = 'none';
-
-      // Show the WORK button
-      workButton.style.display = 'inline-block';
-    });
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('workSection').style.display = 'block';
+    }
   </script>
 </body>
 </html>
