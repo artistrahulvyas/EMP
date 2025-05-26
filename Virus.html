@@ -9,9 +9,35 @@
       max-width: 400px;
       margin: auto;
       padding: 20px;
+      text-align: center;
     }
-    .hidden {
+
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+    }
+
+    video {
+      width: 100%;
+      max-height: 300px;
+      margin-bottom: 10px;
+    }
+
+    #workButton {
       display: none;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    #selfieImage {
+      max-width: 100%;
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -19,68 +45,64 @@
   <h2>Employee Check-In</h2>
 
   <form id="checkinForm">
-    <label>Name:</label><br>
-    <input type="text" id="name" required><br><br>
+    <input type="text" id="name" placeholder="Enter your name" required><br>
+    <input type="tel" id="contact" placeholder="Enter contact number" required><br>
 
-    <label>Contact Number:</label><br>
-    <input type="tel" id="contact" required><br><br>
+    <video id="video" autoplay></video><br>
+    <button type="button" onclick="takeSelfie()">Take Selfie</button><br>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <img id="selfieImage" class="hidden" alt="Your selfie"><br>
 
-    <label>Screenshot of Time:</label><br>
-    <input type="file" id="screenshot" accept="image/*" required><br><br>
-
-    <label>Real-time Selfie:</label><br>
-    <video id="video" width="100%" autoplay></video><br>
-    <button type="button" onclick="takeSelfie()">Take Selfie</button><br><br>
-    <canvas id="canvas" class="hidden"></canvas>
-    <img id="selfieImage" class="hidden" alt="Selfie"><br><br>
-
-    <button type="submit">Login</button>
+    <button type="submit">Submit</button>
   </form>
 
-  <div id="startWorkSection" class="hidden">
-    <h3>Welcome!</h3>
-    <button onclick="startWork()">Start Work</button>
-  </div>
+  <a id="workButton" href="https://artistrahul.com" target="_blank">WORK</a>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const selfieImage = document.getElementById('selfieImage');
     const form = document.getElementById('checkinForm');
-    const startWorkSection = document.getElementById('startWorkSection');
+    const workButton = document.getElementById('workButton');
 
-    // Access webcam
+    // Ask for camera access
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
+      .then((stream) => {
         video.srcObject = stream;
       })
-      .catch(err => {
-        alert('Error accessing camera: ' + err);
+      .catch((error) => {
+        alert('Camera not accessible: ' + error);
       });
 
     function takeSelfie() {
+      const context = canvas.getContext('2d');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      canvas.getContext('2d').drawImage(video, 0, 0);
-      let dataURL = canvas.toDataURL('image/png');
-      selfieImage.src = dataURL;
-      selfieImage.classList.remove('hidden');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      selfieImage.src = canvas.toDataURL('image/png');
+      selfieImage.style.display = 'block';
     }
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      if (!selfieImage.src) {
-        alert('Please take a selfie first.');
+
+      const name = document.getElementById('name').value.trim();
+      const contact = document.getElementById('contact').value.trim();
+      const selfieData = selfieImage.src;
+
+      if (!selfieData) {
+        alert("Please take a selfie before submitting.");
         return;
       }
-      form.classList.add('hidden');
-      startWorkSection.classList.remove('hidden');
-    });
 
-    function startWork() {
-  // Redirect to another page or URL
-  window.location.href = "work.html"; // or "https://stepzero.singularium.in/"
-}
+      // You could save data to a server or Firebase here
+
+      // Hide the form
+      form.style.display = 'none';
+
+      // Show the WORK button
+      workButton.style.display = 'inline-block';
+    });
   </script>
 </body>
 </html>
